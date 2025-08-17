@@ -1,0 +1,110 @@
+<div class="app-container">
+  <div class="header">
+    <h1>{{ title() }}</h1>
+    <div class="progress-section">
+      <div class="progress-info">
+        <span class="progress-text">{{ completedCount() }} of {{ totalCount() }} completed</span>
+        <span class="progress-percentage">{{ progressPercentage() }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressPercentage()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Form -->
+  <div class="add-form-container">
+    <div class="add-form">
+      <div class="input-group">
+        <input 
+          type="text" 
+          [(ngModel)]="newTodoText" 
+          placeholder="What needs to be done?"
+          (keyup.enter)="addTodo()"
+          class="task-input"
+          maxlength="100"
+        >
+        <div class="input-counter">{{ newTodoText.length }}/100</div>
+      </div>
+      
+      <div class="form-controls">
+        <select [(ngModel)]="selectedPriority" class="priority-select">
+          <option value="low">🟢 Low Priority</option>
+          <option value="medium">🟡 Medium Priority</option>
+          <option value="high">🔴 High Priority</option>
+        </select>
+        
+        <button (click)="addTodo()" class="add-btn" [disabled]="!newTodoText.trim()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Task
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-buttons">
+      <button 
+        (click)="setFilter('all')" 
+        class="filter-btn" 
+        [class.active]="filterStatus === 'all'"
+      >
+        All ({{ totalCount() }})
+      </button>
+      <button 
+        (click)="setFilter('active')" 
+        class="filter-btn" 
+        [class.active]="filterStatus === 'active'"
+      >
+        Active ({{ totalCount() - completedCount() }})
+      </button>
+      <button 
+        (click)="setFilter('completed')" 
+        class="filter-btn" 
+        [class.active]="filterStatus === 'completed'"
+      >
+        Completed ({{ completedCount() }})
+      </button>
+    </div>
+    
+    <button 
+      (click)="clearCompleted()" 
+      class="clear-btn"
+      [disabled]="completedCount() === 0"
+    >
+      Clear Completed
+    </button>
+  </div>
+
+  <!-- Task List -->
+  <div class="task-list">
+    <div *ngFor="let todo of filteredTodos()" class="task-wrapper">
+      <app-todo-item 
+        [todo]="todo"
+        (toggle)="toggleTodo($event)"
+        (delete)="deleteTodo($event)"
+        (priorityChange)="updatePriority($event)"
+      ></app-todo-item>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredTodos().length === 0" class="empty-state">
+    <div class="empty-icon">📝</div>
+    <h3>No tasks found</h3>
+    <p *ngIf="filterStatus === 'all'">Start by adding your first task above!</p>
+    <p *ngIf="filterStatus === 'active'">All tasks are completed! 🎉</p>
+    <p *ngIf="filterStatus === 'completed'">No completed tasks yet.</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Built with Angular 17 - Demonstrating Components, Services, Pipes, and Signals</p>
+  </div>
+</div>
+
+
